@@ -16,7 +16,7 @@ public class TimeManager : MonoBehaviour {
             {
                 GameObject obj = new GameObject("TimeManager");
 
-                m_Instance = Instantiate(obj).AddComponent<TimeManager>();
+                m_Instance = obj.AddComponent<TimeManager>();
             }
 
             return m_Instance;
