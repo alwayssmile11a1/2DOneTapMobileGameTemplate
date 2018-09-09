@@ -3,7 +3,30 @@
 public class TimeManager : MonoBehaviour {
 
 
-    private static TimeManager m_TimeManager = null;
+    #region Singleton
+    public static TimeManager Instance
+    {
+        get
+        {
+            if (m_Instance != null) return m_Instance;
+
+            m_Instance = FindObjectOfType<TimeManager>();
+
+            if (m_Instance == null)
+            {
+                GameObject obj = new GameObject("TimeManager");
+
+                m_Instance = Instantiate(obj).AddComponent<TimeManager>();
+            }
+
+            return m_Instance;
+        }
+
+    }
+
+    private static TimeManager m_Instance;
+
+    #endregion
 
     private float m_Amount;
     private float m_Duration;
@@ -15,11 +38,6 @@ public class TimeManager : MonoBehaviour {
     private void Awake()
     {
         m_OriginalFixedDeltaTime = Time.fixedDeltaTime;
-    }
-
-    private void OnEnable()
-    {
-        m_TimeManager = this;
     }
 
     private void Update()
@@ -43,7 +61,7 @@ public class TimeManager : MonoBehaviour {
 
     }
 
-    private void ChangeTimeBackToNormal()
+    public void ChangeTimeBackToNormal()
     {
         Time.timeScale = 1;
         Time.fixedDeltaTime = m_OriginalFixedDeltaTime;
@@ -59,20 +77,20 @@ public class TimeManager : MonoBehaviour {
     /// </summary>
     /// <param name="amount">0 to 1</param>
     /// <param name="duration"></param>
-    public static void SlowdownTime(float amount, float duration, bool graduallyIncreaseTimeBackToNormal = true)
+    public void SlowdownTime(float amount, float duration, bool graduallyIncreaseTimeBackToNormal = true)
     {
         //Change time back to normal first
-        m_TimeManager.ChangeTimeBackToNormal();
+        ChangeTimeBackToNormal();
 
         //Variables
-        m_TimeManager.m_GraduallyIncreaseTimeBackToNormal = graduallyIncreaseTimeBackToNormal;
-        m_TimeManager.m_Timer = duration;
-        m_TimeManager.m_Amount = Mathf.Clamp(amount, 0, 1);
-        m_TimeManager.m_Duration = duration;
+        m_GraduallyIncreaseTimeBackToNormal = graduallyIncreaseTimeBackToNormal;
+        m_Timer = duration;
+        m_Amount = Mathf.Clamp(amount, 0, 1);
+        m_Duration = duration;
 
         //Slowdown
         Time.timeScale = amount;
-        Time.fixedDeltaTime = Time.timeScale * m_TimeManager.m_OriginalFixedDeltaTime;
+        Time.fixedDeltaTime = Time.timeScale * m_OriginalFixedDeltaTime;
 
     }
 
